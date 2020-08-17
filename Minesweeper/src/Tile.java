@@ -28,4 +28,9 @@ public class Tile {
     public void click(){
         clicked = true;
     }
+
+    public void setMine(){
+        mine = true;
+        nearbyMines = 9;
+    }
 }
