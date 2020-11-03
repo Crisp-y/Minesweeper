@@ -4,13 +4,13 @@ public class Board {
     int rows;
     int columns;
     int mines;
-    ArrayList<ArrayList<Tile>> board;
+    BoardArray board;
 
     public Board(int rows, int columns, int mines){
         this.rows = rows;
         this.columns = columns;
         this.mines = mines;
-        board = new ArrayList<>(rows);
+        board = new BoardArray();
         for (int i = 0; i < rows;i++) {
             ArrayList<Tile> newRow = new ArrayList<>(columns);
             for (int j = 0; j < columns; j++) {
@@ -20,6 +20,7 @@ public class Board {
         }
     }
 
+    // Place mines in the board
     public void generateMines(Coordinate start){
         ArrayList<Coordinate> coords = new ArrayList<>();
         for (int i = 0; i < rows; i++) {
@@ -31,10 +32,14 @@ public class Board {
         }
         Random random = new Random();
         for (int i = 0; i < mines; i++){
-            Coordinate newMine = coords.get(random.nextInt(coords.size()));
-            board.get(newMine.getY()).get(newMine.getX()).setMine();
-            //Change the count of nearby mines
-
+            // Remove to avoid choosing the same one
+            Coordinate newPos = coords.remove(random.nextInt(coords.size()));
+            board.get(newPos).setMine();
+            // Change the count of nearby mines
+            ArrayList<Coordinate> surroundCoords = newPos.getSurrounds();
+            for (Coordinate tile : surroundCoords) {
+                board.get(newPos).changeMines(1);
+            }
         }
 
     }
@@ -43,4 +48,12 @@ public class Board {
     public int getColumns(){ return columns;}
     public ArrayList<ArrayList<Tile>> getBoard(){ return board;}
     //Add a printing method for testing
+    // Consider a unique board class with .get(Coordinate)
+}
+
+// Class for specifically the array of tiles, allows easier get() calls
+class BoardArray extends ArrayList<ArrayList<Tile>>{
+    public Tile get(Coordinate c){
+        return this.get(c.getY()).get(c.getX());
+    }
 }
